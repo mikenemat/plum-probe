@@ -9,7 +9,7 @@ Requests (pip install requests)
 First you must initialize the local cache:
 python plum-probe.py --init --username PLUM_ACCOUNT_EMAIL_ADDRESS --password YOUR_PASSWORD
 
-If that works, you can now take on the logical load IDs printed out and control it (on/off/dim/status). 
+If that works, you can take the logical load IDs printed out during init (or with --list) and control it --(on/off/dim/status). 
 See the help: python plum-probe.py --help
 
 You can print the local cache with python plum-probe.py --list
