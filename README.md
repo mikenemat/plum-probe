@@ -17,6 +17,6 @@ You can print the local cache with python plum-probe.py --list
 -If you add/remove/change the layout of your lightpads, you should reinitialize the local cache.
 -You must allocate static IPs or use static DHCP to give your LightPads fixed IPs in order to avoid periodic reinitializations. The local IPs of your Plum dimmers are cached once detected to ensure minimum latency when sending commands.
 
-I will be releasing an OpenHAB binding in the near future.
+OpenHAB binding here: https://github.com/mikenemat/org.openhab.binding.plum
 
 It took me a lot of work to reverse engineer this. Please share credit if you reuse the code.
