@@ -21,4 +21,4 @@ OpenHAB binding here: https://github.com/mikenemat/org.openhab.binding.plum
 
 It took me a lot of work to reverse engineer this. Please share credit if you reuse the code.
 
-**Note** experimental_plum_probe.py is functionally identical to plum_probe.py but with the ability --all_llid to batch apply a command to all Plum lightpads in the entire house. I do not recommend using this! Most people should just use plum_probe.py.
+**Note** experimental_plum_probe.py is functionally identical to plum_probe.py but with the ability --all_llid to batch apply a command to all Plum lightpads in the entire house. I do not recommend using this! Most people should just use plum_probe.py. However...it is a neat way to make all your lightpads glow the same color at the same time :)
