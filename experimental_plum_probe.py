@@ -208,124 +208,43 @@ if args.list or args.on or args.dim >= 0 or args.off or args.status or args.glow
 		print "Unable to read plum-probe.data....are you sure you've initialized it by running python plum-probe.py --init --username USER--password PASS ?????"
 		sys.exit(2)
 
+
+
+llids = []
+
+if (args.all_llid):
+        llids = get_all_llids(plum_dict)
+else:
+        llid.append(args.logical_load_id)
+        
 if args.list:
 	plum_list(plum_dict)
 
-if args.on:
-        llids = []
-        if (args.all_llid):
-                llids = get_all_llids(plum_dict)
-        else:
-                llid.append(args.logical_load_id)
-        for llid in llids:
-                print llid
-                try:
-                        data = data_for_logical_load(llid, plum_dict)
-                except:
-                        print "Error finding the data for this logical load. Either the logical load ID is invalid or this switch wasn't detected on your network. Reinitialize the database using --init"
-                        continue
+for llid in llids:
+        print llid
+        try:
+                data = data_for_logical_load(llid, plum_dict)
+        except:
+                print "Error finding the data for this logical load. Either the logical load ID is invalid or this switch wasn't detected on your network. Reinitialize the database using --init"
+                continue
 
-                headers = {
-                    'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
-                    'X-Plum-House-Access-Token': data["token"]
-                }
-
-
+        headers = {
+                'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
+                'X-Plum-House-Access-Token': data["token"]
+        }
+        
+        if args.on:
                 pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadLevel" % (data["ip"],data["port"]), {"level":255,"llid":llid}, headers))
 
-if args.off:
-        llids = []
-        if (args.all_llid):
-                llids = get_all_llids(plum_dict)
-        else:
-                llids.append(args.logical_load_id)
-        for llid in llids:
-                print llid
-                try:
-                        data = data_for_logical_load(llid, plum_dict)
-                except:
-                        print "Error finding the data for this logical load. Either the logical load ID is invalid or this switch wasn't detected on your network. Reinitialize the database using --init"
-                        continue
-
-                headers = {
-                    'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
-                    'X-Plum-House-Access-Token': data["token"]
-                }
-
-
+        if args.off:
                 pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadLevel" % (data["ip"],data["port"]), {"level":0,"llid":llid}, headers))
-
-if args.dim >= 0:
-        llids = []
-        if (args.all_llid):
-                llids = get_all_llids(plum_dict)
-        else:
-                llids.append(args.logical_load_id)
-        for llid in llids:
-                print llid
-                try:
-                        data = data_for_logical_load(llid, plum_dict)
-                except:
-                        print "Error finding the data for this logical load. Either the logical load ID is invalid or this switch wasn't detected on your network. Reinitialize the database using --init"
-                        continue
-
-                headers = {
-                    'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
-                    'X-Plum-House-Access-Token': data["token"]
-                }
-
+        if args.dim >= 0:
                 pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadLevel" % (data["ip"],data["port"]), {"level":args.dim,"llid":llid}, headers))
-
-if args.glow_intensity >= 0:
-        llids = []
-        if (args.all_llid):
-                llids = get_all_llids(plum_dict)
-        else:
-                llids.append(args.logical_load_id)
-        for llid in llids:
-                print llid
-                try:
-                        data = data_for_logical_load(llid, plum_dict)
-                except:
-                        print "Error finding the data for this logical load. Either the logical load ID is invalid or this switch wasn't detected on your network. Reinitialize the database using --init"
-                        continue
-
-                headers = {
-                    'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
-                    'X-Plum-House-Access-Token': data["token"]
-                }
-
+        if args.glow_intensity >= 0:
                 pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowIntensity":(float(args.glow_intensity)/float(100))},"llid":llid}, headers))
-
-if args.glow_timeout >= 0:
-        llids = []
-        if (args.all_llid):
-                llids = get_all_llids(plum_dict)
-        else:
-                llids.append(args.logical_load_id)
-        for llid in llids:
-                print llid
-                try:
-                        data = data_for_logical_load(llid, plum_dict)
-                except:
-                        print "Error finding the data for this logical load. Either the logical load ID is invalid or this switch wasn't detected on your network. Reinitialize the database using --init"
-                        continue
-
-                headers = {
-                    'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
-                    'X-Plum-House-Access-Token': data["token"]
-                }
-
+        if args.glow_timeout >= 0:
                 pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowTimeout":args.glow_timeout},"llid":llid}, headers))
-                
-if len(args.glow_force) > 0:
-        llids = []
-        if (args.all_llid):
-                llids = get_all_llids(plum_dict)
-        else:
-                llids.append(args.logical_load_id)
-        for llid in llids:
-                print llid
+        if len(args.glow_force) > 0:
                 forceValues = args.glow_force.split(",")
                 intensity = int(forceValues[0].strip())
                 time = int(forceValues[1].strip())
@@ -333,106 +252,21 @@ if len(args.glow_force) > 0:
                 green = int(forceValues[3].strip())
                 blue = int(forceValues[4].strip())
                 white = int(forceValues[5].strip())
-                try:
-                        data = data_for_logical_load(llid, plum_dict)
-                except:
-                        print "Error finding the data for this logical load. Either the logical load ID is invalid or this switch wasn't detected on your network. Reinitialize the database using --init"
-                        continue
-
-                headers = {
-                    'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
-                    'X-Plum-House-Access-Token': data["token"]
-                }
 
                 pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadGlow" % (data["ip"],data["port"]), {"intensity":(float(intensity)/float(100)),"timeout":time * 1000,"red":red,"white":white,"blue":blue,"green":green,"llid":llid}, headers))
-            
-if args.glow_enable:
-        llids = []
-        if (args.all_llid):
-                llids = get_all_llids(plum_dict)
-        else:
-                llids.append(args.logical_load_id)
-        for llid in llids:
-                print llid
-                try:
-                        data = data_for_logical_load(llid, plum_dict)
-                except:
-                        print "Error finding the data for this logical load. Either the logical load ID is invalid or this switch wasn't detected on your network. Reinitialize the database using --init"
-                        continue
-
-                headers = {
-                    'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
-                    'X-Plum-House-Access-Token': data["token"]
-                }
-
+        if args.glow_enable:
                 pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowEnabled":True},"llid":llid}, headers))
-		
-if args.glow_disable:
-        llids = []
-        if (args.all_llid):
-                llids = get_all_llids(plum_dict)
-        else:
-                llids.append(args.logical_load_id)
-        for llid in llids:
-                print llid
-                try:
-                        data = data_for_logical_load(llid, plum_dict)
-                except:
-                        print "Error finding the data for this logical load. Either the logical load ID is invalid or this switch wasn't detected on your network. Reinitialize the database using --init"
-                        continue
-
-                headers = {
-                    'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
-                    'X-Plum-House-Access-Token': data["token"]
-                }
-
+	if args.glow_disable:
                 pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowEnabled":False},"llid":llid}, headers))
-		
-if len(args.glow_color) > 0:
-        llids = []
-        if (args.all_llid):
-                llids = get_all_llids(plum_dict)
-        else:
-                llids.append(args.logical_load_id)
-        for llid in llids:
-                print llid
+	if len(args.glow_color) > 0:
                 colorValues = args.glow_color.split(",")
                 red = int(colorValues[0].strip())
                 green = int(colorValues[1].strip())
                 blue = int(colorValues[2].strip())
                 white = int(colorValues[3].strip())
-                try:
-                        data = data_for_logical_load(llid, plum_dict)
-                except:
-                        print "Error finding the data for this logical load. Either the logical load ID is invalid or this switch wasn't detected on your network. Reinitialize the database using --init"
-                        continue
-
-                headers = {
-                    'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
-                    'X-Plum-House-Access-Token': data["token"]
-                }
 
                 pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowColor":{"red":red,"white":white,"blue":blue,"green":green}},"llid":llid}, headers))
-                
-if args.status:
-        llids = []
-        if (args.all_llid):
-                llids = get_all_llids(plum_dict)
-        else:
-                llids.append(args.logical_load_id)
-        for llid in llids:
-                print llid
-                try:
-                        data = data_for_logical_load(llid, plum_dict)
-                except:
-                        print "Error finding the data for this logical load. Either the logical load ID is invalid or this switch wasn't detected on your network. Reinitialize the database using --init"
-                        continue
-
-                headers = {
-                    'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
-                    'X-Plum-House-Access-Token': data["token"]
-                }
-
+        if args.status:
                 ret = plum_local_rest("https://%s:%s/v2/getLogicalLoadMetrics" % (data["ip"],data["port"]), {"llid":llid}, headers)
                 print ret
 
