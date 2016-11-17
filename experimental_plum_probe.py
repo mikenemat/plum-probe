@@ -198,6 +198,7 @@ if args.init:
 	plum_dict.update({"network":replies})
 	plum_list(plum_dict)
 	pickle.dump(plum_dict, open("plum-probe.data","wb"))
+	sys.exit(0)
 	
 plum_dict = {}
 
@@ -207,9 +208,9 @@ if args.list or args.on or args.dim >= 0 or args.off or args.status or args.glow
 	except:
 		print "Unable to read plum-probe.data....are you sure you've initialized it by running python plum-probe.py --init --username USER--password PASS ?????"
 		sys.exit(2)
-
-
-
+if args.list:
+	plum_list(plum_dict)
+	sys.exit(0)
 llids = []
 
 if (args.all_llid):
@@ -217,9 +218,6 @@ if (args.all_llid):
 else:
         llid.append(args.logical_load_id)
         
-if args.list:
-	plum_list(plum_dict)
-
 for llid in llids:
         print llid
         try:
