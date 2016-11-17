@@ -27,10 +27,10 @@ ops.add_argument("--off",help="Turn off the Plum LightPad", required=False, acti
 ops.add_argument("--dim",help="Dim the Plum LightPad to specified level (0 to 255)", type=int, required=False, default=-1)
 ops.add_argument("--glow_force",help="Force the glow on for an amount of time WITHOUT persisting the color. MUST be in the format INTENSITY,TIME,R,G,B,W. Intensity=0-100,TIME=SECONDS,R=0-255,G=0-255,B=0-255,W=0-255 example --glow_force 100,20,255,0,0,0 to force the lightpad to glow red at full brightness for 20 seconds", required=False, default="")
 ops.add_argument("--glow_timeout",help="Set the glow timeout (how long the glow stays on after a motion event, value must be in seconds", type=int, required=False, default=-1)
-ops.add_argument("--glow_intensity",help="Set the glow timeout, value must be an integer 0-100", type=int, required=False, default=-1)
+ops.add_argument("--glow_intensity",help="Set the glow intensity (brightness), value must be an integer 0-100", type=int, required=False, default=-1)
 ops.add_argument("--glow_color",help="Set the glow color. MUST BE IN THE FORMAT --glow_color R,G,B,W with R,G,B,W standing for Red,Green,Blue,White respectively, values 0-255 for each. WARNING: Certain values like 255,255,255,255 seem to disable the glow. Set it back to 255,0,0,0 and verify it is red if you suspect you passed in a value it didn't like", required=False, default="")
-ops.add_argument("--glow_enable",help="Enable glow for the logical load", action="store_true", required=False, default=False)
-ops.add_argument("--glow_disable",help="Disable glow for the logical load", action="store_true", required=False, default=False)
+ops.add_argument("--glow_enable",help="Enable glow on motion for the logical load", action="store_true", required=False, default=False)
+ops.add_argument("--glow_disable",help="Disable glow on motion for the logical load", action="store_true", required=False, default=False)
 ops.add_argument("--status",help="Return the status of the Plum Lightpad", action="store_true", required=False, default=False)
 
 args = parser.parse_args()
