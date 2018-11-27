@@ -37,15 +37,15 @@ This is some sample configuration:
 
     shell_command:
         # On at 100%
-        # living_room_lights_on: 'LOGICAL_LOAD_IDS="1111111-1111-11111-1111-11111 22222-222-222-22222-22222"; cd /share/source/plum-probe/; for llid in ${LOGICAL_LOAD_IDS}; do python3 plum-probe3.py --on --logical_load_id ${llid} & done'
+        # living_room_lights_on: 'LOGICAL_LOAD_IDS="1111111-1111-11111-1111-11111 22222-222-222-22222-22222"; cd /share/source/plum-probe/; for llid in ${LOGICAL_LOAD_IDS}; do python3 plum-probe.py --on --logical_load_id ${llid} & done'
         # On at 50%
-        living_room_lights_on: 'LOGICAL_LOAD_IDS="1111111-1111-11111-1111-111111 22222-222-222-22222-22222"; cd /share/source/plum-probe/; for llid in ${LOGICAL_LOAD_IDS}; do python3 plum-probe3.py --dim 127 --logical_load_id ${llid} & done'
-        living_room_lights_off: 'LOGICAL_LOAD_IDS="11111111-1111-11111-1111-111111 22222-222-222-22222-22222"; cd /share/source/plum-probe/; for llid in ${LOGICAL_LOAD_IDS}; do python3 plum-probe3.py --off --logical_load_id ${llid} & done'
+        living_room_lights_on: 'LOGICAL_LOAD_IDS="1111111-1111-11111-1111-111111 22222-222-222-22222-22222"; cd /share/source/plum-probe/; for llid in ${LOGICAL_LOAD_IDS}; do python3 plum-probe.py --dim 127 --logical_load_id ${llid} & done'
+        living_room_lights_off: 'LOGICAL_LOAD_IDS="11111111-1111-11111-1111-111111 22222-222-222-22222-22222"; cd /share/source/plum-probe/; for llid in ${LOGICAL_LOAD_IDS}; do python3 plum-probe.py --off --logical_load_id ${llid} & done'
         living_room_lights_set_level: >
             /bin/bash -c 'LOGICAL_LOAD_IDS="11111111-1111-11111-1111-111111 22222-222-222-22222-22222"; 
             cd /share/source/plum-probe/; 
             for llid in ${LOGICAL_LOAD_IDS}; do 
-            python3 plum-probe3.py --dim {{ brightness }} --logical_load_id ${llid}; 
+            python3 plum-probe.py --dim {{ brightness }} --logical_load_id ${llid}; 
             done'
 
     light:
@@ -66,7 +66,7 @@ This is some sample configuration:
 
     sensor:
         - platform: command_line
-          command: "LOGICAL_LOAD_IDS='11111111-1111-11111-1111-111111 22222-222-222-22222-22222'; cd /share/source/plum-probe/; for llid in ${LOGICAL_LOAD_IDS}; do python3 plum-probe3.py --status --logical_load_id ${llid} | cut -d' ' -f2 | cut -d, -f1; break ; done"
+          command: "LOGICAL_LOAD_IDS='11111111-1111-11111-1111-111111 22222-222-222-22222-22222'; cd /share/source/plum-probe/; for llid in ${LOGICAL_LOAD_IDS}; do python3 plum-probe.py --status --logical_load_id ${llid} | cut -d' ' -f2 | cut -d, -f1; break ; done"
           hidden: true
           name: 'living_room_lights'
           # reducce scan interval if the lag updating after lights go on or off is too long
