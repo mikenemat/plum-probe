@@ -1,3 +1,8 @@
+As many of you are aware. Plum has been out of business for a while now. Many people (including myself) have experienced hardware issues with the lightpads (dimmer flickering, dead microSD cards, wifi drops, etc), as well as software issues provisioning or reconfiguring new or existing lightpads. I've removed all of my plum lightpads from my home (18 units!) and replaced them with Lutron Caseta. I'd encourage you all to do the same. No further support will be provided for any of this code.
+
+--------------------------------------------------------------------
+
+
 # plum-probe
 A tool to manage Plum LightPads without the iOS app
 
