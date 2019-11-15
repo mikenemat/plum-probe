@@ -38,24 +38,24 @@ ops.add_argument("--status",help="Return the status of the Plum Lightpad", actio
 args = parser.parse_args()
 
 def get_all_llids(plum_dict):
-        returnList = []
-	for h,house in plum_dict["house"].iteritems():
-		for r,room in house["rooms"].iteritems():
-			for l,load in room["logical_loads"].iteritems():
+	returnList = []
+	for h,house in plum_dict["house"].items():
+		for r,room in house["rooms"].items():
+			for l,load in room["logical_loads"].items():
 				if not l in returnList:
                                         returnList.append(l)
 					
 	return returnList
 
 def data_for_logical_load(llid, plum_dict):
-	for h,house in plum_dict["house"].iteritems():
-		for r,room in house["rooms"].iteritems():
-			for l,load in room["logical_loads"].iteritems():
+	for h,house in plum_dict["house"].items():
+		for r,room in house["rooms"].items():
+			for l,load in room["logical_loads"].items():
 				if l == llid:
-					for p,pads in load["lightpads"].iteritems():
+					for p,pads in load["lightpads"].items():
 						token = house["token"]
 						h = hashlib.new("sha256")
-						h.update(token)
+						h.update(token.encode("utf-8"))
 						token = h.hexdigest()
 						return {"ip":plum_dict["network"][p]["ip"],"port":plum_dict["network"][p]["port"],"token":token}
 					
@@ -65,29 +65,29 @@ def data_for_logical_load(llid, plum_dict):
 def plum_list(plum_dict):
 	house_dict = plum_dict["house"]
 	replies = plum_dict["network"]
-	for h,house in house_dict.iteritems():
+	for h,house in house_dict.items():
 		print("House: %s" % (house["name"]))
 		print("\tHouse ID: %s" % (h))
 		print("\tHouse Token: %s" % (house["token"]))
 		print("")
 		print("\tRooms:")
-		for r,room in house["rooms"].iteritems():
+		for r,room in house["rooms"].items():
 			print("\t\tRoom: %s" % (room["name"]))
 			print("\t\t\tRoom ID: %s" % (r))
-			for l,load in room["logical_loads"].iteritems():
+			for l,load in room["logical_loads"].items():
 				print("\t\t\tLogical Load: %s" % (load["name"]))			
 				print("\t\t\t\tLogical Load ID: %s" % (l))			
 				print("")
 				print("\t\t\t\tLightpads:")
-				for p, lightpad in load["lightpads"].iteritems():
+				for p, lightpad in load["lightpads"].items():
 					print("\t\t\t\t\tLightpad ID: %s" % (p))
 					try:
 						print("\t\t\t\t\tLightpad IP: %s" % (replies[p]["ip"]))
 						print("\t\t\t\t\tLightpad Port: %s" % (replies[p]["port"]))
 					except:
-						print "\t\t\t\t\tWARNING Did not find LightPad on local network!!!"
+						print ("\t\t\t\t\tWARNING Did not find LightPad on local network!!!")
 				
-					print ""
+					print ("")
 def plum_rest(url, post, headers):
 	r = requests.post(url, headers=headers, json=post)
 	return r.json()
@@ -102,24 +102,24 @@ def plum_local_rest(url, post, headers):
 
 def plum_parse(json, key, map, ref):
 	values = {}
-	for k,v in map.iteritems():
+	for k,v in map.items():
 		values.update({k:json[v]})
 
 	ref.update({key:values})
 
 if (args.logical_load_id or args.all_llid) and args.on == False and args.off == False and args.dim == -1 and args.status == False and len(args.glow_color) == 0 and args.glow_enable == False and args.glow_disable == False and args.glow_intensity == -1 and args.glow_timeout == -1 and len(args.glow_force) == 0:
-	print "You must provide on/off/dim/status along with your logical load ID to execute a command"
-	print "example --logical_load_id 123345677-23525-2525-252525255 --dim 255"
+	print ("You must provide on/off/dim/status along with your logical load ID to execute a command")
+	print ("example --logical_load_id 123345677-23525-2525-252525255 --dim 255")
 	sys.exit(3)
 
 if args.init and (len(args.username) == 0 or len(args.password) == 0):
-	print "You must specifiy your Plum username and password when initializing"
-	print "example --init -u bob@gmail.com -p hunter2"
+	print ("You must specifiy your Plum username and password when initializing")
+	print ("example --init -u bob@gmail.com -p hunter2")
 	sys.exit(1)
 
 if args.init:
-	print "Probing local network for Plum lightpads... This may take around 30 seconds."
-	print ""
+	print ("Probing local network for Plum lightpads... This may take around 30 seconds.")
+	print ("")
 
 	count = 0
 	replies = {}
@@ -129,16 +129,16 @@ if args.init:
 		cs.bind(("", 50000))
 		cs.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 		cs.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
-		cs.sendto('PLUM', ('255.255.255.255', 43770))
+		cs.sendto('PLUM'.encode(),('255.255.255.255', 43770))
 		cs.settimeout(5)
 		try:
 			while True:
-		        	data,ip = cs.recvfrom(10000)
-				parsed = data.split(" ")
+				data,ip = cs.recvfrom(10000)
+				parsed = data.decode().split(" ")
 				lpid = parsed[2]
 				if lpid not in replies:
 					count = count + 1
-					print "Found %d LightPads so far..." % (count)
+					print ("Found %d LightPads so far..." % (count))
 					lpid_dict = {}
 					lpid_dict.update({"port":parsed[3]})
 					lpid_dict.update({"ip":ip[0]})
@@ -148,25 +148,25 @@ if args.init:
 		finally:
 			cs.close()
 
-	print ""
-	print "Retrieving layout from Plum cloud servers..."
-	print ""
+	print ("")
+	print ("Retrieving layout from Plum cloud servers...")
+	print ("")
 
 
-	auth_string = base64.b64encode("%s:%s" % (args.username, args.password))
+	auth_string = base64.b64encode(("%s:%s" % (args.username, args.password)).encode())
 
 	house_dict = {}
 
 	headers = {
 	    'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
-	    'Authorization': "Basic %s" % (auth_string),
+	    'Authorization': "Basic %s" % (auth_string.decode()),
 	}
 
-        try:
+	try:
                 response = requests.get('https://production.plum.technology/v2/getHouses', headers=headers).json()
-        except:
-                print "Received error logging in to Plum. This is most likely due to an invalid username or password!"
-                sys.exit(5)
+	except:
+		print ("Received error logging in to Plum. This is most likely due to an invalid username or password!")
+		sys.exit(5)
                 
 	for house in response :
 		reply1 = plum_rest("https://production.plum.technology/v2/getHouse", {"hid":house}, headers)
@@ -206,7 +206,7 @@ if args.list or args.on or args.dim >= 0 or args.off or args.status or args.glow
 	try:
 		plum_dict = pickle.load(open("plum-probe.data","rb"))
 	except:
-		print "Unable to read plum-probe.data....are you sure you've initialized it by running python plum-probe.py --init --username USER--password PASS ?????"
+		print ("Unable to read plum-probe.data....are you sure you've initialized it by running python plum-probe.py --init --username USER--password PASS ?????")
 		sys.exit(2)
 if args.list:
 	plum_list(plum_dict)
@@ -214,59 +214,59 @@ if args.list:
 llids = []
 
 if (args.all_llid):
-        llids = get_all_llids(plum_dict)
+	llids = get_all_llids(plum_dict)
 else:
-        llid.append(args.logical_load_id)
-        
+	llid.append(args.logical_load_id)
+
 for llid in llids:
-        print llid
-        try:
-                data = data_for_logical_load(llid, plum_dict)
-        except:
-                print "Error finding the data for this logical load. Either the logical load ID is invalid or this switch wasn't detected on your network. Reinitialize the database using --init"
-                continue
+	print (llid)
+	try:
+		data = data_for_logical_load(llid, plum_dict)
+	except:
+		print ("Error finding the data for this logical load. Either the logical load ID is invalid or this switch wasn't detected on your network. Reinitialize the database using --init")
+		continue
 
-        headers = {
-                'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
-                'X-Plum-House-Access-Token': data["token"]
-        }
-        
-        if args.on:
-                pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadLevel" % (data["ip"],data["port"]), {"level":255,"llid":llid}, headers))
+	headers = {
+		'User-Agent': 'Plum/2.3.0 (iPhone; iOS 9.2.1; Scale/2.00)',
+		'X-Plum-House-Access-Token': data["token"]
+	}
 
-        if args.off:
-                pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadLevel" % (data["ip"],data["port"]), {"level":0,"llid":llid}, headers))
-        if args.dim >= 0:
-                pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadLevel" % (data["ip"],data["port"]), {"level":args.dim,"llid":llid}, headers))
-        if args.glow_intensity >= 0:
-                pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowIntensity":(float(args.glow_intensity)/float(100))},"llid":llid}, headers))
-        if args.glow_timeout >= 0:
-                pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowTimeout":args.glow_timeout},"llid":llid}, headers))
-        if len(args.glow_force) > 0:
-                forceValues = args.glow_force.split(",")
-                intensity = int(forceValues[0].strip())
-                time = int(forceValues[1].strip())
-                red = int(forceValues[2].strip())
-                green = int(forceValues[3].strip())
-                blue = int(forceValues[4].strip())
-                white = int(forceValues[5].strip())
+	if args.on:
+		pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadLevel" % (data["ip"],data["port"]), {"level":255,"llid":llid}, headers))
 
-                pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadGlow" % (data["ip"],data["port"]), {"intensity":(float(intensity)/float(100)),"timeout":time * 1000,"red":red,"white":white,"blue":blue,"green":green,"llid":llid}, headers))
-        if args.glow_enable:
-                pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowEnabled":True},"llid":llid}, headers))
+	if args.off:
+		pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadLevel" % (data["ip"],data["port"]), {"level":0,"llid":llid}, headers))
+	if args.dim >= 0:
+		pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadLevel" % (data["ip"],data["port"]), {"level":args.dim,"llid":llid}, headers))
+	if args.glow_intensity >= 0:
+		pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowIntensity":(float(args.glow_intensity)/float(100))},"llid":llid}, headers))
+	if args.glow_timeout >= 0:
+		pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowTimeout":args.glow_timeout},"llid":llid}, headers))
+	if len(args.glow_force) > 0:
+		forceValues = args.glow_force.split(",")
+		intensity = int(forceValues[0].strip())
+		time = int(forceValues[1].strip())
+		red = int(forceValues[2].strip())
+		green = int(forceValues[3].strip())
+		blue = int(forceValues[4].strip())
+		white = int(forceValues[5].strip())
+
+		pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadGlow" % (data["ip"],data["port"]), {"intensity":(float(intensity)/float(100)),"timeout":time * 1000,"red":red,"white":white,"blue":blue,"green":green,"llid":llid}, headers))
+	if args.glow_enable:
+		pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowEnabled":True},"llid":llid}, headers))
 	if args.glow_disable:
-                pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowEnabled":False},"llid":llid}, headers))
+		pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowEnabled":False},"llid":llid}, headers))
 	if len(args.glow_color) > 0:
-                colorValues = args.glow_color.split(",")
-                red = int(colorValues[0].strip())
-                green = int(colorValues[1].strip())
-                blue = int(colorValues[2].strip())
-                white = int(colorValues[3].strip())
+		colorValues = args.glow_color.split(",")
+		red = int(colorValues[0].strip())
+		green = int(colorValues[1].strip())
+		blue = int(colorValues[2].strip())
+		white = int(colorValues[3].strip())
 
-                pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowColor":{"red":red,"white":white,"blue":blue,"green":green}},"llid":llid}, headers))
-        if args.status:
-                ret = plum_local_rest("https://%s:%s/v2/getLogicalLoadMetrics" % (data["ip"],data["port"]), {"llid":llid}, headers)
-                print ret
+		pool.apply_async(plum_command, ("https://%s:%s/v2/setLogicalLoadConfig" % (data["ip"],data["port"]), {"config":{"glowColor":{"red":red,"white":white,"blue":blue,"green":green}},"llid":llid}, headers))
+	if args.status:
+		ret = plum_local_rest("https://%s:%s/v2/getLogicalLoadMetrics" % (data["ip"],data["port"]), {"llid":llid}, headers)
+		print (ret)
 
 pool.close()
 pool.join()
